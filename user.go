@@ -1,15 +1,31 @@
 package v2scar
 
 import (
+	"errors"
 	"sync"
 	"sync/atomic"
 )
 
 // User V2ray User
 type User struct {
-	Email           string `json:"_"`
+	Email           string `json:"email"`
+	UUID            string `json:"uuid"`
+	AlterId         uint32 `json:"alter_id"`
+	Level           uint32 `json:"level"`
+	Enable          bool   `json:"enable"`
 	UploadTraffic   int64  `json:"upload_traffic"`
 	DownloadTraffic int64  `json:"download_traffic"`
+	running         bool
+}
+
+func newUser(email, uuid string, level, alterId uint32, enable bool) *User {
+	return &User{
+		Email:   email,
+		UUID:    uuid,
+		Level:   level,
+		Enable:  enable,
+		AlterId: alterId,
+	}
 }
 
 func (u *User) setUploadTraffic(ut int64) {
@@ -18,6 +34,16 @@ func (u *User) setUploadTraffic(ut int64) {
 
 func (u *User) setDownloadTraffic(dt int64) {
 	atomic.StoreInt64(&u.DownloadTraffic, dt)
+}
+
+func (u *User) setEnable(enable bool) {
+	// NOTE not thread safe!
+	u.Enable = enable
+}
+
+func (u *User) setRunning(status bool) {
+	// NOTE not thread safe!
+	u.running = status
 }
 
 // UserPool user pool
@@ -34,19 +60,30 @@ func NewUserPool() *UserPool {
 	}
 }
 
-// GetOrCreateUser GetOrCreateUser
-func (up *UserPool) GetOrCreateUser(email string) *User {
+// CreateUser get create user
+func (up *UserPool) CreateUser(email, uuid string, level, alterId uint32, enable bool) (*User, error) {
 	up.access.Lock()
 	defer up.access.Unlock()
 
 	if user, found := up.users[email]; found {
-		return user
+		return user, errors.New("User Already Exists")
+	} else {
+		user := newUser(email, uuid, level, alterId, enable)
+		up.users[user.Email] = user
+		return user, nil
 	}
-	user := &User{
-		Email: email,
+}
+
+// GetUserByEmail get user by email
+func (up *UserPool) GetUserByEmail(email string) (*User, error) {
+	up.access.Lock()
+	defer up.access.Unlock()
+
+	if user, found := up.users[email]; found {
+		return user, nil
+	} else {
+		return nil, errors.New("User Not Found")
 	}
-	up.users[user.Email] = user
-	return user
 }
 
 // GetAllUsers GetAllUsers

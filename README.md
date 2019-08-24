@@ -1,11 +1,11 @@
 # v2scar
-side car for V2ray
+Sidecar For V2ray
 
 ## 原理介绍
 
-该项目需要以`side car`的形式和`v2ray`部署在是一台机器上
+该项目需要以`sidecar`的形式和`v2ray`部署在一台机器上
 
-他通过开放的grpc接口动态添加/删除`Vmess`,并且能统计用户的流量
+他通过grpc接口动态添加/删除V2ray的`Vmess`用户,并统计流量
 
 通过接入`django-sspanel`的api，可以动态调节v2ray的Vmess用户
 
@@ -17,14 +17,19 @@ side car for V2ray
 
 ## 使用说明
 
-### 配置环境变量
+* 可以直接以cli的形式运行:
+
+`./v2scar --grpc-endpoint="127.0.0.0:8080 --api-endpoint="xxx" --sync-time=60`
+
+* 或者通过配置环境变量来运行:
 
 ```bash
+export V2SCAR_SYNC_TIME=60 # 和django-sspanel同步的时间间隔
 export V2SCAR_API_ENDPOINT="xxxx" # 这个是django-sspanel的sync api 地址
 export V2SCAR_GRPC_ENDPOINT="127.0.0.1:8080" # 这个是机器上v2ray开放的grpc地址
 ```
 
-### 配置v2ray:
+## 配置V2ray:
 
 > 这只是一份参考的配置，
 > 关键的部分在于`stats/api/policy/routing`
@@ -80,7 +85,9 @@ export V2SCAR_GRPC_ENDPOINT="127.0.0.1:8080" # 这个是机器上v2ray开放的g
     }
 ],
 "log": {
-    "loglevel": "debug"
+    "loglevel": "warning",
+    "access": "/var/log/v2ray/access.log",
+    "error": "/var/log/v2ray/error.log"
 },
 "outbound": {
     "protocol": "freedom",

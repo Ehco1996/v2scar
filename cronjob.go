@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"google.golang.org/grpc"
@@ -12,8 +11,8 @@ import (
 	v2stats "v2ray.com/core/app/stats/command"
 )
 
-var API_ENDPOINT = os.Getenv("V2SCAR_API_ENDPOINT")
-var GRPC_ENDPOINT = os.Getenv("V2SCAR_GRPC_ENDPOINT")
+var API_ENDPOINT = "127.0.0.1:8080"
+var GRPC_ENDPOINT = "http://fun.com/api"
 
 type UserConfig struct {
 	Email   string `json:"email"`
@@ -47,7 +46,7 @@ func SyncJob(up *UserPool) {
 	resp := syncResp{}
 	err = getJson(httpClient, API_ENDPOINT, &resp)
 	if err != nil {
-		log.Fatalf("APi连接失败,请检查API地址 当前地址: %v", API_ENDPOINT)
+		log.Fatalf("API连接失败,请检查API地址 当前地址: %v", API_ENDPOINT)
 	}
 	initOrUpdateUser(up, proxymanClient, &resp)
 	syncUserTrafficToServer(up, statClient)
@@ -89,7 +88,7 @@ func syncUserTrafficToServer(up *UserPool, c v2stats.StatsServiceClient) {
 	for _, user := range up.GetAllUsers() {
 		tf := user.DownloadTraffic + user.UploadTraffic
 		if tf > 0 {
-			log.Printf("[INFO] User: %v Now Used Total Traffic: %v", user.Email)
+			log.Printf("[INFO] User: %v Now Used Total Traffic: %v", user.Email, tf)
 		}
 	}
 

@@ -62,7 +62,9 @@ func initOrUpdateUser(up *UserPool, c v2proxyman.HandlerServiceClient, sr *syncR
 			if err != nil {
 				log.Fatalln(err)
 			}
-			AddInboundUser(c, sr.Tag, newUser)
+			if newUser.Enable {
+				AddInboundUser(c, sr.Tag, newUser)
+			}
 		} else {
 			// Old User
 			if user.Enable != cfg.Enable {

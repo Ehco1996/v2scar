@@ -2,6 +2,7 @@ package v2scar
 
 import (
 	"errors"
+	"fmt"
 	"sync"
 	"sync/atomic"
 )
@@ -66,7 +67,7 @@ func (up *UserPool) CreateUser(email, uuid string, level, alterId uint32, enable
 	defer up.access.Unlock()
 
 	if user, found := up.users[email]; found {
-		return user, errors.New("User Already Exists")
+		return user, errors.New(fmt.Sprintf("User Already Exists Email: %s", email))
 	} else {
 		user := newUser(email, uuid, level, alterId, enable)
 		up.users[user.Email] = user
@@ -82,7 +83,7 @@ func (up *UserPool) GetUserByEmail(email string) (*User, error) {
 	if user, found := up.users[email]; found {
 		return user, nil
 	} else {
-		return nil, errors.New("User Not Found")
+		return nil, errors.New(fmt.Sprintf("User Not Found Email: %s", email))
 	}
 }
 

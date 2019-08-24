@@ -13,6 +13,7 @@ import (
 var SYNC_TIME = 60
 
 func main() {
+	// TODO v2ray重启了，sidecar会挂
 
 	app := cli.NewApp()
 	app.Name = "v2scar"

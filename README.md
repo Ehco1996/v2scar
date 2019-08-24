@@ -33,7 +33,7 @@ export V2SCAR_GRPC_ENDPOINT="127.0.0.1:8080" # 这个是机器上v2ray开放的g
 
 > 这只是一份参考的配置，
 > 关键的部分在于`stats/api/policy/routing`
-> 另外如果需要对接 django-sspanel的话，配置里的inbound的`port/tag`必须和面板后台里的配置相同
+> 另外如果需要对接 django-sspanel的话，配置里的inbound的`port/tag/level`必须和面板后台里的配置相同
 
 ```json
 {

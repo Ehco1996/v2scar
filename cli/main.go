@@ -13,7 +13,6 @@ import (
 var SYNC_TIME = 60
 
 func main() {
-	// TODO v2ray重启了，sidecar会挂
 
 	app := cli.NewApp()
 	app.Name = "v2scar"
@@ -49,7 +48,7 @@ func main() {
 		up := v2scar.NewUserPool()
 		tick := time.Tick(time.Duration(SYNC_TIME) * time.Second)
 		for {
-			go v2scar.SyncJob(up)
+			go v2scar.SyncTask(up)
 			<-tick
 		}
 	}

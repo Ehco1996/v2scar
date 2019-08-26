@@ -1,6 +1,7 @@
 package v2scar
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
 )
@@ -12,4 +13,11 @@ func getJson(c *http.Client, url string, target interface{}) error {
 	}
 	defer r.Body.Close()
 	return json.NewDecoder(r.Body).Decode(target)
+}
+
+func postJson(c *http.Client, url string, dataStruct interface{}) error {
+	buf := new(bytes.Buffer)
+	json.NewEncoder(buf).Encode(dataStruct)
+	_, err := http.Post(url, "application/json", buf)
+	return err
 }

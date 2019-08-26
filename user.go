@@ -9,6 +9,7 @@ import (
 
 // User V2ray User
 type User struct {
+	UserId          int    `json:"user_id"`
 	Email           string `json:"email"`
 	UUID            string `json:"uuid"`
 	AlterId         uint32 `json:"alter_id"`
@@ -19,8 +20,9 @@ type User struct {
 	running         bool
 }
 
-func newUser(email, uuid string, level, alterId uint32, enable bool) *User {
+func newUser(userId int, email, uuid string, level, alterId uint32, enable bool) *User {
 	return &User{
+		UserId:  userId,
 		Email:   email,
 		UUID:    uuid,
 		Level:   level,
@@ -35,6 +37,11 @@ func (u *User) setUploadTraffic(ut int64) {
 
 func (u *User) setDownloadTraffic(dt int64) {
 	atomic.StoreInt64(&u.DownloadTraffic, dt)
+}
+
+func (u *User) resetTraffic() {
+	atomic.StoreInt64(&u.DownloadTraffic, 0)
+	atomic.StoreInt64(&u.UploadTraffic, 0)
 }
 
 func (u *User) setEnable(enable bool) {
@@ -62,14 +69,14 @@ func NewUserPool() *UserPool {
 }
 
 // CreateUser get create user
-func (up *UserPool) CreateUser(email, uuid string, level, alterId uint32, enable bool) (*User, error) {
+func (up *UserPool) CreateUser(userId int, email, uuid string, level, alterId uint32, enable bool) (*User, error) {
 	up.access.Lock()
 	defer up.access.Unlock()
 
 	if user, found := up.users[email]; found {
-		return user, errors.New(fmt.Sprintf("User Already Exists Email: %s", email))
+		return user, errors.New(fmt.Sprintf("UserId: %d Already Exists Email: %s", user.UserId, email))
 	} else {
-		user := newUser(email, uuid, level, alterId, enable)
+		user := newUser(userId, email, uuid, level, alterId, enable)
 		up.users[user.Email] = user
 		return user, nil
 	}
@@ -97,4 +104,9 @@ func (up *UserPool) GetAllUsers() []*User {
 		users = append(users, user)
 	}
 	return users
+}
+
+// GetUsersNum GetUsersNum
+func (up *UserPool) GetUsersNum() int {
+	return len(up.users)
 }

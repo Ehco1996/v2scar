@@ -11,8 +11,8 @@ import (
 	v2stats "v2ray.com/core/app/stats/command"
 )
 
-var API_ENDPOINT = "127.0.0.1:8080"
-var GRPC_ENDPOINT = "http://fun.com/api"
+var API_ENDPOINT string
+var GRPC_ENDPOINT string
 
 type UserConfig struct {
 	UserId  int    `json:"user_id"`
@@ -43,10 +43,12 @@ func SyncTask(up *UserPool) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	conn, err := grpc.DialContext(ctx, GRPC_ENDPOINT, grpc.WithInsecure(), grpc.WithBlock())
-	defer conn.Close()
+
 	if err != nil {
 		log.Printf("[WARNING]: GRPC连接失败,请检查V2ray是否运行并开放对应grpc端口 当前GRPC地址: %v", GRPC_ENDPOINT)
 		return
+	} else {
+		defer conn.Close()
 	}
 
 	// Init Client
@@ -66,7 +68,6 @@ func SyncTask(up *UserPool) {
 
 	// sync user traffic
 	syncUserTrafficToServer(up, statClient, httpClient)
-
 }
 
 func initOrUpdateUser(up *UserPool, c v2proxyman.HandlerServiceClient, sr *syncResp) {

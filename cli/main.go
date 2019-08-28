@@ -10,7 +10,7 @@ import (
 	"github.com/Ehco1996/v2scar"
 )
 
-var SYNC_TIME = 60
+var SYNC_TIME int
 
 func main() {
 

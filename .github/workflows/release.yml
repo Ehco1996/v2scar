@@ -1,0 +1,22 @@
+name: go-releaser
+
+on:
+  create:
+    branches: master
+
+jobs:
+  goreleaser:
+    runs-on: ubuntu-latest
+    steps:
+      -name: Checkout
+        uses: actions/checkout@master
+      -name: Set up Go
+        uses: actions/setup-go@master
+      -name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@master
+        with:
+          version: latest
+          args: release --rm-dist
+          key: ${{ secrets.YOUR_PRIVATE_KEY }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -37,75 +37,67 @@ export V2SCAR_GRPC_ENDPOINT="127.0.0.1:8080" # 这个是机器上v2ray开放的g
 
 ```json
 {
-"stats": {},
-"api": {
-    "services": [
-    "HandlerService",
-    "StatsService"
-    ],
-    "tag": "api"
-},
-"policy": {
-    "levels": {
-    "0": {
-        "handshake": 4,
-        "connIdle": 300,
-        "uplinkOnly": 2,
-        "downlinkOnly": 5,
-        "statsUserUplink": true,
-        "statsUserDownlink": true,
-        "bufferSize": 10240
-    }
+    "stats": {},
+    "api": {
+        "tag": "api",
+        "services": [
+            "HandlerService",
+            "StatsService"
+        ]
     },
-    "system": {
-    "statsInboundUplink": true,
-    "statsInboundDownlink": true
-    }
-},
-"inbound": {
-    "port": 10086,
-    "protocol": "vmess",
-    "settings": {
-    "clients": []
+    "log": {
+        "loglevel": "warning"
     },
-    "streamSettings": {
-    "network": "tcp"
-    },
-    "tag": "proxy"
-},
-"inboundDetour": [
-    {
-    "listen": "127.0.0.1",
-    "port": 8080,
-    "protocol": "dokodemo-door",
-    "settings": {
-        "address": "127.0.0.1"
-    },
-    "tag": "api"
-    }
-],
-"log": {
-    "loglevel": "warning",
-    "access": "/var/log/v2ray/access.log",
-    "error": "/var/log/v2ray/error.log"
-},
-"outbound": {
-    "protocol": "freedom",
-    "settings": {}
-},
-"routing": {
-    "settings": {
-    "rules": [
-        {
-        "inboundTag": [
-            "api"
-        ],
-        "outboundTag": "api",
-        "type": "field"
+    "policy": {
+        "levels": {
+            "0": {
+                "statsUserUplink": true,
+                "statsUserDownlink": true
+            }
+        },
+        "system": {
+            "statsInboundUplink": true,
+            "statsInboundDownlink": true
         }
-    ]
     },
-    "strategy": "rules"
-}
+    "inbounds": [
+        {
+            "tag": "proxy",
+            "port": 10086,
+            "protocol": "vmess",
+            "settings": {
+                "clients": []
+            }
+        },
+        {
+            "listen": "127.0.0.1",
+            "port": 8080,
+            "protocol": "dokodemo-door",
+            "settings": {
+                "address": "127.0.0.1"
+            },
+            "tag": "api"
+        }
+    ],
+    "outbounds": [
+        {
+            "protocol": "freedom",
+            "settings": {}
+        }
+    ],
+    "routing": {
+        "settings": {
+            "rules": [
+                {
+                    "inboundTag": [
+                        "api"
+                    ],
+                    "outboundTag": "api",
+                    "type": "field"
+                }
+            ]
+        },
+        "strategy": "rules"
+    }
 }
 ```

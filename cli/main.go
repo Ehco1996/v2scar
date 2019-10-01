@@ -17,13 +17,13 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "v2scar"
 	app.Usage = "sidecar for V2ray"
-	app.Version = "0.0.2"
+	app.Version = "0.0.3"
 	app.Author = "Ehco1996"
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:        "grpc-endpoint, gp",
-			Value:       "127.0.0.0.1:8080",
+			Value:       "127.0.0.1:8080",
 			Usage:       "V2ray开放的GRPC地址",
 			EnvVar:      "V2SCAR_GRPC_ENDPOINT",
 			Destination: &v2scar.GRPC_ENDPOINT,

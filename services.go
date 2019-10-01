@@ -21,18 +21,22 @@ func GetAndResetUserTraffic(c v2stats.StatsServiceClient, up *UserPool) {
 		Pattern: "user>>>",
 		Reset_:  true,
 	}
-	resp, _ := c.QueryStats(context.Background(), req)
-	for _, stat := range resp.Stat {
-		email, trafficType := getEmailAndTrafficType(stat.Name)
-		user, err := up.GetUserByEmail(email)
-		if err != nil {
-			log.Println(err)
-		} else {
-			switch trafficType {
-			case "uplink":
-				user.setUploadTraffic(stat.Value)
-			case "downlink":
-				user.setDownloadTraffic(stat.Value)
+	resp, err := c.QueryStats(context.Background(), req)
+	if err != nil {
+		log.Println("[ERROR]:", err)
+	} else {
+		for _, stat := range resp.Stat {
+			email, trafficType := getEmailAndTrafficType(stat.Name)
+			user, err := up.GetUserByEmail(email)
+			if err != nil {
+				log.Println(err)
+			} else {
+				switch trafficType {
+				case "uplink":
+					user.setUploadTraffic(stat.Value)
+				case "downlink":
+					user.setDownloadTraffic(stat.Value)
+				}
 			}
 		}
 	}

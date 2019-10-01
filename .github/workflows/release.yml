@@ -25,11 +25,10 @@ jobs:
             dep ensure
         fi
 
-      -name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@master
-        with:
-          version: latest
-          args: release --rm-dist
-          key: ${{ secrets.YOUR_PRIVATE_KEY }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: GoReleaser Action
+      uses: goreleaser/goreleaser-action@v0.4.0
+      with:
+        version: latest
+        args: release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GORELEASER_GITHUB_TOKEN }}

@@ -19,7 +19,7 @@ Sidecar For V2ray
 
 * 可以直接以cli的形式运行:
 
-`./v2scar --api-endpoint="xxx" --grpc-endpoint="127.0.0.0:8080" --sync-time=60`
+`./v2scar --api-endpoint="xxx" --grpc-endpoint="127.0.0.1:8080" --sync-time=60`
 
 * 或者通过配置环境变量来运行:
 

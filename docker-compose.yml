@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  v2ray:
+    image: v2ray/official:latest
+    container_name: v2ray
+    restart: always
+    volumes:
+      - ./v2ray-config.json:/etc/v2ray/config.json
+    ports:
+      - "10086:10086"
+    # command: ["v2ray","-config=https://xxx.com"]
+
+  v2scar:
+    container_name : v2scar
+    image: ehco1996/v2scar
+    restart: always
+    depends_on:
+      - v2ray
+    links:
+      - v2ray
+    environment:
+      V2SCAR_SYNC_TIME: 60
+      V2SCAR_API_ENDPOINT: ""
+      V2SCAR_GRPC_ENDPOINT: "v2ray:8080"

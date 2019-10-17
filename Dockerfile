@@ -1,24 +1,25 @@
-# Start from the latest golang base image
-FROM golang:alpine
+FROM golang:1.12 as builder
 
-# Add Maintainer Info
-LABEL maintainer="Ehco1996 <zh19960202@gmail.com>"
+# Set Environment Variables
+ENV HOME /app
+ENV CGO_ENABLED 0
+ENV GOOS linux
 
-# Set the Current Working Directory inside the container
 WORKDIR /app
-
-# Copy go mod and sum files
 COPY go.mod go.sum ./
-
-# Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
 RUN go mod download
-
-# Copy the source from the current directory to the Working Directory inside the container
 COPY . .
 
 # Build the Go app
-RUN go build -v -o v2scar cli/main.go
+RUN go build -v -a -installsuffix cgo -o main cli/main.go
 
+FROM alpine:latest
 
-# Command to run the executable
-CMD ["./v2scar"]
+RUN apk --no-cache add ca-certificates
+
+WORKDIR /root/
+
+# Copy the pre-built binary file from the previous stage
+COPY --from=builder /app/main .
+
+CMD ["./main"]

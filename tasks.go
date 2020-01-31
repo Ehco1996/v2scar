@@ -59,7 +59,7 @@ func SyncTask(up *UserPool) {
 	resp := syncResp{}
 	err = getJson(httpClient, API_ENDPOINT, &resp)
 	if err != nil {
-		log.Printf("[WARNING]: API连接失败,请检查API地址 当前地址: %v", API_ENDPOINT)
+		log.Printf("[WARNING]: API连接失败,请检查API地址 当前地址: %v 错误信息:%v", API_ENDPOINT,err.Error())
 		return
 	}
 

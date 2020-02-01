@@ -5,7 +5,7 @@ on:
     branches: master
 
 jobs:
-  goreleaser:
+  ci-ci-ci:
     runs-on: ubuntu-latest
     steps:
     - name: Set up Go 1.12
@@ -32,3 +32,11 @@ jobs:
         args: release
       env:
         GITHUB_TOKEN: ${{ secrets.GORELEASER_GITHUB_TOKEN }}
+
+    - name: Publish Docker
+      uses: elgohr/Publish-Docker-Github-Action@2.12
+      with:
+        name: ehco1996/v2scar
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        tags: "latest"

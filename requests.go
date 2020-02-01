@@ -18,6 +18,7 @@ func getJson(c *http.Client, url string, target interface{}) error {
 func postJson(c *http.Client, url string, dataStruct interface{}) error {
 	buf := new(bytes.Buffer)
 	json.NewEncoder(buf).Encode(dataStruct)
-	_, err := http.Post(url, "application/json", buf)
+	r, err := http.Post(url, "application/json", buf)
+	defer r.Body.Close()
 	return err
 }

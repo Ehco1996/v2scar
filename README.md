@@ -1,6 +1,8 @@
 # v2scar
 Sidecar For V2ray
 
+![go-releaser](https://github.com/Ehco1996/v2scar/workflows/go-releaser/badge.svg)
+
 ## 原理介绍
 
 该项目需要以`sidecar`的形式和`v2ray`部署在一台机器上

@@ -17,7 +17,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "v2scar"
 	app.Usage = "sidecar for V2ray"
-	app.Version = "0.0.3"
+	app.Version = "0.0.9"
 	app.Author = "Ehco1996"
 
 	app.Flags = []cli.Flag{
@@ -46,6 +46,8 @@ func main() {
 
 	app.Action = func(c *cli.Context) error {
 		up := v2scar.NewUserPool()
+		log.Println("Waitting v2ray start...")
+		time.Sleep(time.Second * 3)
 		tick := time.Tick(time.Duration(SYNC_TIME) * time.Second)
 		for {
 			go v2scar.SyncTask(up)

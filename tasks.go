@@ -45,7 +45,7 @@ func SyncTask(up *UserPool) {
 	conn, err := grpc.DialContext(ctx, GRPC_ENDPOINT, grpc.WithInsecure(), grpc.WithBlock())
 
 	if err != nil {
-		log.Printf("[WARNING]: GRPC连接失败,请检查V2ray是否运行并开放对应grpc端口 当前GRPC地址: %v", GRPC_ENDPOINT)
+		log.Printf("[WARNING]: GRPC连接失败,请检查V2ray是否运行并开放对应grpc端口 当前GRPC地址: %v 错误信息: %v", GRPC_ENDPOINT, err.Error())
 		return
 	} else {
 		defer conn.Close()
@@ -59,7 +59,7 @@ func SyncTask(up *UserPool) {
 	resp := syncResp{}
 	err = getJson(httpClient, API_ENDPOINT, &resp)
 	if err != nil {
-		log.Printf("[WARNING]: API连接失败,请检查API地址 当前地址: %v 错误信息:%v", API_ENDPOINT,err.Error())
+		log.Printf("[WARNING]: API连接失败,请检查API地址 当前地址: %v 错误信息:%v", API_ENDPOINT, err.Error())
 		return
 	}
 

@@ -86,7 +86,7 @@ func RemoveInboundUser(c v2proxyman.HandlerServiceClient, tag string, user *User
 	if err != nil {
 		log.Println("[ERROR]:", err)
 	} else {
-		log.Printf("[INFO] User: %v Removed To V2ray Server Tag: %v", user.Email, tag)
+		log.Printf("[INFO] User: %v Removed From V2ray Server Tag: %v", user.Email, tag)
 		user.setRunning(false)
 	}
 }

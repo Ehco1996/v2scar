@@ -1,6 +1,6 @@
 your.domain
 {
-  log ./caddy.log
+  log stdout
   tls user@host.com
   proxy /ray v2ray:10099 {
     websocket

@@ -34,3 +34,5 @@ services:
     volumes:
       - ./Caddyfile:/etc/Caddyfile
       - ./caddy/:/root/.caddy/
+    environment:
+      ACME_AGREE: true

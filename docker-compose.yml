@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 services:
   v2ray:
@@ -12,7 +12,7 @@ services:
     # command: ["v2ray","-config=https://xxx.com"]
 
   v2scar:
-    container_name : v2scar
+    container_name: v2scar
     image: ehco1996/v2scar
     restart: always
     depends_on:
@@ -23,3 +23,14 @@ services:
       V2SCAR_SYNC_TIME: 60
       V2SCAR_API_ENDPOINT: ""
       V2SCAR_GRPC_ENDPOINT: "v2ray:8080"
+
+  caddy:
+    image: abiosoft/caddy
+    container_name: caddy
+    depends_on:
+      - "v2ray"
+    ports:
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/Caddyfile
+      - ./caddy/:/root/.caddy/

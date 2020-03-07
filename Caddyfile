@@ -1,0 +1,8 @@
+your.domain
+{
+  log ./caddy.log
+  tls user@host.com
+  proxy /ray v2ray:10099 {
+    websocket
+    header_upstream -Origin
+  }

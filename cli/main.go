@@ -17,7 +17,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "v2scar"
 	app.Usage = "sidecar for V2ray"
-	app.Version = "0.0.10"
+	app.Version = "0.0.11"
 	app.Author = "Ehco1996"
 
 	app.Flags = []cli.Flag{

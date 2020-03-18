@@ -63,7 +63,7 @@ func SyncTask(up *UserPool) {
 		return
 	}
 
-	// get user config
+	// init or update user config
 	initOrUpdateUser(up, proxymanClient, &resp)
 
 	// sync user traffic
@@ -71,8 +71,14 @@ func SyncTask(up *UserPool) {
 }
 
 func initOrUpdateUser(up *UserPool, c v2proxyman.HandlerServiceClient, sr *syncResp) {
+	// Enable line numbers in logging
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	log.Println("[INFO] Call initOrUpdateUser")
+
+	syncUserMap := make(map[string]bool)
+
 	for _, cfg := range sr.Configs {
+		syncUserMap[cfg.Email] = true
 		user, _ := up.GetUserByEmail(cfg.Email)
 		if user == nil {
 			// New User
@@ -89,14 +95,35 @@ func initOrUpdateUser(up *UserPool, c v2proxyman.HandlerServiceClient, sr *syncR
 				// update enable status
 				user.setEnable(cfg.Enable)
 			}
-			if user.Enable && !user.running {
-				// Start Not Running user
+
+			// change user uuid
+			if user.UUID != cfg.UUID {
+				log.Printf("[INFO] user: %s 更换了uuid old: %s new: %s", user.Email, user.UUID, cfg.UUID)
+				RemoveInboundUser(c, sr.Tag, user)
+				user.setUUID(cfg.UUID)
 				AddInboundUser(c, sr.Tag, user)
 			}
+
+			// remove not enable user
 			if !user.Enable && user.running {
 				// Close Not Enable user
 				RemoveInboundUser(c, sr.Tag, user)
 			}
+
+			// start not runing user
+			if user.Enable && !user.running {
+				// Start Not Running user
+				AddInboundUser(c, sr.Tag, user)
+			}
+
+		}
+	}
+
+	// remote user not in server
+	for _, user := range up.GetAllUsers() {
+		if _, ok := syncUserMap[user.Email]; !ok {
+			RemoveInboundUser(c, sr.Tag, user)
+			up.RemoveUserByEmail(user.Email)
 		}
 	}
 }

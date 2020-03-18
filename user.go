@@ -54,6 +54,11 @@ func (u *User) setRunning(status bool) {
 	u.running = status
 }
 
+func (u *User) setUUID(uuid string) {
+	// NOTE not thread safe!
+	u.UUID = uuid
+}
+
 // UserPool user pool
 type UserPool struct {
 	access sync.RWMutex
@@ -92,6 +97,13 @@ func (up *UserPool) GetUserByEmail(email string) (*User, error) {
 	} else {
 		return nil, errors.New(fmt.Sprintf("User Not Found Email: %s", email))
 	}
+}
+
+// RemoveUserByEmail get user by email
+func (up *UserPool) RemoveUserByEmail(email string) {
+	up.access.Lock()
+	defer up.access.Unlock()
+	delete(up.users, email)
 }
 
 // GetAllUsers GetAllUsers

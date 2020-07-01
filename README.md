@@ -1,7 +1,16 @@
 # v2scar
+
 Sidecar For V2ray
 
 ![go-releaser](https://github.com/Ehco1996/v2scar/workflows/go-releaser/badge.svg)
+
+## 视频安装教程
+
+* 面板视频安装教程: [地址](https://youtu.be/BRHcdGeufvY)
+
+* 后端对接视频教程: [地址](https://youtu.be/QNbnya1HHU0)
+
+* 隧道对接视频教程: [地址](https://youtu.be/R4U0NZaMUeY)
 
 ## 原理介绍
 

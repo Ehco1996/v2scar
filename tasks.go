@@ -43,7 +43,6 @@ func SyncTask(up *UserPool) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	conn, err := grpc.DialContext(ctx, GRPC_ENDPOINT, grpc.WithInsecure(), grpc.WithBlock())
-
 	if err != nil {
 		log.Printf("[WARNING]: GRPC连接失败,请检查V2ray是否运行并开放对应grpc端口 当前GRPC地址: %v 错误信息: %v", GRPC_ENDPOINT, err.Error())
 		return
@@ -54,7 +53,7 @@ func SyncTask(up *UserPool) {
 	// Init Client
 	proxymanClient := v2proxyman.NewHandlerServiceClient(conn)
 	statClient := v2stats.NewStatsServiceClient(conn)
-	httpClient := &http.Client{Timeout: 10 * time.Second}
+	httpClient := &http.Client{Timeout: 3 * time.Second}
 
 	resp := syncResp{}
 	err = getJson(httpClient, API_ENDPOINT, &resp)
@@ -94,7 +93,6 @@ func initOrUpdateUser(up *UserPool, c v2proxyman.HandlerServiceClient, sr *syncR
 				// update enable status
 				user.setEnable(cfg.Enable)
 			}
-
 			// change user uuid
 			if user.UUID != cfg.UUID {
 				log.Printf("[INFO] user: %s 更换了uuid old: %s new: %s", user.Email, user.UUID, cfg.UUID)
@@ -102,19 +100,16 @@ func initOrUpdateUser(up *UserPool, c v2proxyman.HandlerServiceClient, sr *syncR
 				user.setUUID(cfg.UUID)
 				AddInboundUser(c, sr.Tag, user)
 			}
-
 			// remove not enable user
 			if !user.Enable && user.running {
 				// Close Not Enable user
 				RemoveInboundUser(c, sr.Tag, user)
 			}
-
 			// start not runing user
 			if user.Enable && !user.running {
 				// Start Not Running user
 				AddInboundUser(c, sr.Tag, user)
 			}
-
 		}
 	}
 

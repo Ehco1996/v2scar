@@ -54,7 +54,7 @@ func SyncTask(up *UserPool) {
 	// Init Client
 	proxymanClient := v2proxyman.NewHandlerServiceClient(conn)
 	statClient := v2stats.NewStatsServiceClient(conn)
-	httpClient := &http.Client{Timeout: 3 * time.Second}
+	httpClient := &http.Client{Timeout: 10 * time.Second}
 
 	resp := syncResp{}
 	err = getJson(httpClient, API_ENDPOINT, &resp)
@@ -72,7 +72,6 @@ func SyncTask(up *UserPool) {
 
 func initOrUpdateUser(up *UserPool, c v2proxyman.HandlerServiceClient, sr *syncResp) {
 	// Enable line numbers in logging
-	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	log.Println("[INFO] Call initOrUpdateUser")
 
 	syncUserMap := make(map[string]bool)

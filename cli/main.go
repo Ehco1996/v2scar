@@ -13,6 +13,7 @@ import (
 var SYNC_TIME int
 
 func main() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
 	app := cli.NewApp()
 	app.Name = "v2scar"

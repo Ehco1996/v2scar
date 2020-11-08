@@ -8,4 +8,4 @@ require (
 
 go 1.15
 
-replace v2ray.com/core => github.com/v2ray/v2ray-core v4.23.1+incompatible
+replace v2ray.com/core => github.com/v2ray/v2ray-core v4.31.0+incompatible

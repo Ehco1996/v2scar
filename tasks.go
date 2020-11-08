@@ -13,14 +13,27 @@ import (
 
 var API_ENDPOINT string
 var GRPC_ENDPOINT string
+var PROTOCOL_ENDPOINT string
+
+const (
+	VMESS  string = "vmess"
+	TROJAN string = "trojan"
+)
 
 type UserConfig struct {
 	UserId  int    `json:"user_id"`
 	Email   string `json:"email"`
-	UUID    string `json:"uuid"`
-	AlterId uint32 `json:"alter_id"`
 	Level   uint32 `json:"level"`
 	Enable  bool   `json:"enable"`
+	VmessConfig
+	TrojanConfig
+}
+type VmessConfig struct {
+	UUID    string `json:"uuid"`
+	AlterId uint32 `json:"alter_id"`
+}
+type TrojanConfig struct {
+	Password string `json:"password"`
 }
 type UserTraffic struct {
 	UserId          int   `json:"user_id"`
@@ -35,6 +48,7 @@ type syncReq struct {
 type syncResp struct {
 	Configs []*UserConfig
 	Tag     string `json:"tag"`
+	Protocol string `json:"protocol"`
 }
 
 func SyncTask(up *UserPool) {
@@ -80,12 +94,12 @@ func initOrUpdateUser(up *UserPool, c v2proxyman.HandlerServiceClient, sr *syncR
 		user, _ := up.GetUserByEmail(cfg.Email)
 		if user == nil {
 			// New User
-			newUser, err := up.CreateUser(cfg.UserId, cfg.Email, cfg.UUID, cfg.Level, cfg.AlterId, cfg.Enable)
+			newUser, err := up.CreateUser(cfg.UserId, sr.Protocol, cfg.Email, cfg.UUID, cfg.Password, cfg.Level, cfg.AlterId, cfg.Enable)
 			if err != nil {
 				log.Fatalln(err)
 			}
 			if newUser.Enable {
-				AddInboundUser(c, sr.Tag, newUser)
+				AddInboundUser(c, sr.Tag, sr.Protocol, newUser)
 			}
 		} else {
 			// Old User
@@ -94,11 +108,11 @@ func initOrUpdateUser(up *UserPool, c v2proxyman.HandlerServiceClient, sr *syncR
 				user.setEnable(cfg.Enable)
 			}
 			// change user uuid
-			if user.UUID != cfg.UUID {
+			if user.UUID != cfg.UUID && user.UUID != "" {
 				log.Printf("[INFO] user: %s 更换了uuid old: %s new: %s", user.Email, user.UUID, cfg.UUID)
 				RemoveInboundUser(c, sr.Tag, user)
 				user.setUUID(cfg.UUID)
-				AddInboundUser(c, sr.Tag, user)
+				AddInboundUser(c, sr.Tag, sr.Protocol, user)
 			}
 			// remove not enable user
 			if !user.Enable && user.running {
@@ -108,7 +122,13 @@ func initOrUpdateUser(up *UserPool, c v2proxyman.HandlerServiceClient, sr *syncR
 			// start not runing user
 			if user.Enable && !user.running {
 				// Start Not Running user
-				AddInboundUser(c, sr.Tag, user)
+				AddInboundUser(c, sr.Tag, sr.Protocol, user)
+			}
+			if user.Password != cfg.Password && user.Password != "" {
+				log.Printf("[INFO] user: %s 更换了password old: %s new: %s", user.Email, user.Password, cfg.Password)
+				RemoveInboundUser(c, sr.Tag, user)
+				user.setPassword(cfg.Password)
+				AddInboundUser(c, sr.Tag, sr.Protocol, user)
 			}
 		}
 	}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"strings"
+	"v2ray.com/core/proxy/trojan"
 
 	v2proxyman "v2ray.com/core/app/proxyman/command"
 	v2stats "v2ray.com/core/app/stats/command"
@@ -48,21 +49,38 @@ func getEmailAndTrafficType(input string) (string, string) {
 }
 
 // AddInboundUser add user to inbound by tag
-func AddInboundUser(c v2proxyman.HandlerServiceClient, tag string, user *User) {
-	_, err := c.AlterInbound(context.Background(), &v2proxyman.AlterInboundRequest{
-		Tag: tag,
-		Operation: serial.ToTypedMessage(&v2proxyman.AddUserOperation{
-			User: &protocol.User{
-				Level: user.Level,
-				Email: user.Email,
-				Account: serial.ToTypedMessage(&vmess.Account{
-					Id:               user.UUID,
-					AlterId:          user.AlterId,
-					SecuritySettings: &protocol.SecurityConfig{Type: protocol.SecurityType_AUTO},
-				}),
-			},
-		}),
-	})
+func AddInboundUser(c v2proxyman.HandlerServiceClient, tag, rProtocol string, user *User) {
+	var err error
+	switch rProtocol {
+	case VMESS:
+		_, err = c.AlterInbound(context.Background(), &v2proxyman.AlterInboundRequest{
+			Tag: tag,
+			Operation: serial.ToTypedMessage(&v2proxyman.AddUserOperation{
+				User: &protocol.User{
+					Level: user.Level,
+					Email: user.Email,
+					Account: serial.ToTypedMessage(&vmess.Account{
+						Id:               user.UUID,
+						AlterId:          user.AlterId,
+						SecuritySettings: &protocol.SecurityConfig{Type: protocol.SecurityType_AUTO},
+					}),
+				},
+			}),
+		})
+	case TROJAN:
+		_, err = c.AlterInbound(context.Background(), &v2proxyman.AlterInboundRequest{
+			Tag: tag,
+			Operation: serial.ToTypedMessage(&v2proxyman.AddUserOperation{
+				User: &protocol.User{
+					Level: user.Level,
+					Email: user.Email,
+					Account: serial.ToTypedMessage(&trojan.Account{
+						Password: user.Password,
+					}),
+				},
+			}),
+		})
+	}
 	if err != nil {
 		log.Println("[ERROR]:", err)
 		if strings.Contains(err.Error(), "already exists.") {

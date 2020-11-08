@@ -11,23 +11,41 @@ import (
 type User struct {
 	UserId          int    `json:"user_id"`
 	Email           string `json:"email"`
-	UUID            string `json:"uuid"`
-	AlterId         uint32 `json:"alter_id"`
 	Level           uint32 `json:"level"`
 	Enable          bool   `json:"enable"`
 	UploadTraffic   int64  `json:"upload_traffic"`
 	DownloadTraffic int64  `json:"download_traffic"`
+	Vmess
+	Trojan
 	running         bool
 }
 
-func newUser(userId int, email, uuid string, level, alterId uint32, enable bool) *User {
+type Vmess struct {
+	UUID            string `json:"uuid"`
+	AlterId         uint32 `json:"alter_id"`
+}
+
+type Trojan struct {
+	Password        string `json:"password"`
+}
+
+func newVmessUser(userId int, email, uuid string, level, alterId uint32, enable bool) *User {
 	return &User{
 		UserId:  userId,
 		Email:   email,
-		UUID:    uuid,
 		Level:   level,
 		Enable:  enable,
-		AlterId: alterId,
+		Vmess:   Vmess{UUID: uuid, AlterId: alterId},
+	}
+}
+
+func newTrojanUser(userId int, email, password string, level uint32, enable bool) *User {
+	return &User{
+		UserId:  userId,
+		Email:   email,
+		Level:   level,
+		Enable:  enable,
+		Trojan:  Trojan{Password: password},
 	}
 }
 
@@ -59,6 +77,11 @@ func (u *User) setUUID(uuid string) {
 	u.UUID = uuid
 }
 
+func (u *User) setPassword(password string) {
+	// NOTE not thread safe!
+	u.Password = password
+}
+
 // UserPool user pool
 type UserPool struct {
 	access sync.RWMutex
@@ -74,16 +97,21 @@ func NewUserPool() *UserPool {
 }
 
 // CreateUser get create user
-func (up *UserPool) CreateUser(userId int, email, uuid string, level, alterId uint32, enable bool) (*User, error) {
+func (up *UserPool) CreateUser(userId int, protocol, email, uuid, password string, level, alterId uint32, enable bool) (*User, error) {
 	up.access.Lock()
 	defer up.access.Unlock()
 
 	if user, found := up.users[email]; found {
 		return user, errors.New(fmt.Sprintf("UserId: %d Already Exists Email: %s", user.UserId, email))
 	} else {
-		user := newUser(userId, email, uuid, level, alterId, enable)
-		up.users[user.Email] = user
-		return user, nil
+		var newUser *User
+		switch protocol {
+			case TROJAN: newUser = newTrojanUser(userId, email, password, level, enable)
+			case VMESS: newUser = newVmessUser(userId, email, uuid, level, alterId, enable)
+			default: newUser = newVmessUser(userId, email, uuid, level, alterId, enable)
+		}
+		up.users[newUser.Email] = newUser
+		return newUser, nil
 	}
 }
 

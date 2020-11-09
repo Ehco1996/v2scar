@@ -17,35 +17,35 @@ type User struct {
 	DownloadTraffic int64  `json:"download_traffic"`
 	Vmess
 	Trojan
-	running         bool
+	running bool
 }
 
 type Vmess struct {
-	UUID            string `json:"uuid"`
-	AlterId         uint32 `json:"alter_id"`
+	UUID    string `json:"uuid"`
+	AlterId uint32 `json:"alter_id"`
 }
 
 type Trojan struct {
-	Password        string `json:"password"`
+	Password string `json:"password"`
 }
 
 func newVmessUser(userId int, email, uuid string, level, alterId uint32, enable bool) *User {
 	return &User{
-		UserId:  userId,
-		Email:   email,
-		Level:   level,
-		Enable:  enable,
-		Vmess:   Vmess{UUID: uuid, AlterId: alterId},
+		UserId: userId,
+		Email:  email,
+		Level:  level,
+		Enable: enable,
+		Vmess:  Vmess{UUID: uuid, AlterId: alterId},
 	}
 }
 
 func newTrojanUser(userId int, email, password string, level uint32, enable bool) *User {
 	return &User{
-		UserId:  userId,
-		Email:   email,
-		Level:   level,
-		Enable:  enable,
-		Trojan:  Trojan{Password: password},
+		UserId: userId,
+		Email:  email,
+		Level:  level,
+		Enable: enable,
+		Trojan: Trojan{Password: password},
 	}
 }
 
@@ -106,9 +106,12 @@ func (up *UserPool) CreateUser(userId int, protocol, email, uuid, password strin
 	} else {
 		var newUser *User
 		switch protocol {
-			case TROJAN: newUser = newTrojanUser(userId, email, password, level, enable)
-			case VMESS: newUser = newVmessUser(userId, email, uuid, level, alterId, enable)
-			default: newUser = newVmessUser(userId, email, uuid, level, alterId, enable)
+		case TROJAN:
+			newUser = newTrojanUser(userId, email, password, level, enable)
+		case VMESS:
+			newUser = newVmessUser(userId, email, uuid, level, alterId, enable)
+		default:
+			newUser = newVmessUser(userId, email, uuid, level, alterId, enable)
 		}
 		up.users[newUser.Email] = newUser
 		return newUser, nil

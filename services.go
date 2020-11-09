@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"strings"
+
 	"v2ray.com/core/proxy/trojan"
 
 	v2proxyman "v2ray.com/core/app/proxyman/command"
@@ -82,7 +83,7 @@ func AddInboundUser(c v2proxyman.HandlerServiceClient, tag, rProtocol string, us
 		})
 	}
 	if err != nil {
-		log.Println("[ERROR]:", err)
+		log.Println("[ERROR]:", err, tag)
 		if strings.Contains(err.Error(), "already exists.") {
 			// TODO 优化这里的逻辑 这里针对side car重启而v2ray没重启的状态
 			user.setRunning(true)

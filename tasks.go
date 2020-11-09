@@ -21,10 +21,10 @@ const (
 )
 
 type UserConfig struct {
-	UserId  int    `json:"user_id"`
-	Email   string `json:"email"`
-	Level   uint32 `json:"level"`
-	Enable  bool   `json:"enable"`
+	UserId int    `json:"user_id"`
+	Email  string `json:"email"`
+	Level  uint32 `json:"level"`
+	Enable bool   `json:"enable"`
 	VmessConfig
 	TrojanConfig
 }
@@ -46,8 +46,8 @@ type syncReq struct {
 }
 
 type syncResp struct {
-	Configs []*UserConfig
-	Tag     string `json:"tag"`
+	Configs  []*UserConfig
+	Tag      string `json:"tag"`
 	Protocol string `json:"protocol"`
 }
 

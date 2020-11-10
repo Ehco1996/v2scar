@@ -7,6 +7,10 @@ services:
     restart: always
     volumes:
       - ./v2ray-config.json:/etc/v2ray/config.json
+      #以下为 Trojan TLS相关
+      #冒号后面地址与django-spanel中配置地址一致,冒号前为服务器上cert和key所在真实地址
+      #-/path/to/cert:/path/to/cert
+      #-/path/to/key:/path/to/key
     ports:
       - "10086:10086"
     # command: ["v2ray","-config=https://xxx.com"]

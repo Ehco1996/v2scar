@@ -81,6 +81,21 @@ func AddInboundUser(c v2proxyman.HandlerServiceClient, tag, rProtocol string, us
 				},
 			}),
 		})
+	default:
+		_, err = c.AlterInbound(context.Background(), &v2proxyman.AlterInboundRequest{
+			Tag: tag,
+			Operation: serial.ToTypedMessage(&v2proxyman.AddUserOperation{
+				User: &protocol.User{
+					Level: user.Level,
+					Email: user.Email,
+					Account: serial.ToTypedMessage(&vmess.Account{
+						Id:               user.UUID,
+						AlterId:          user.AlterId,
+						SecuritySettings: &protocol.SecurityConfig{Type: protocol.SecurityType_AUTO},
+					}),
+				},
+			}),
+		})
 	}
 	if err != nil {
 		log.Println("[ERROR]:", err, tag)

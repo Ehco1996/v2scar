@@ -116,4 +116,4 @@ export V2SCAR_GRPC_ENDPOINT="127.0.0.1:8080" # 这个是机器上v2ray开放的g
 
 ## dev
 
-go get v2ray的时候需要 `export GONOSUMDB=v2ray.com/core,github.com/v2ray/v2ray-core`
+go get v2ray的时候需要 `export GONOSUMDB=v2ray.com/core,github.com/v2fly/v2ray-core`

@@ -13,7 +13,7 @@ services:
       #-/path/to/key:/path/to/key
     ports:
       - "10086:10086"
-    # command: ["v2ray","-config=https://xxx.com"]
+    # command: ["v2ray","run","-config=https://xxx.com"]
 
   v2scar:
     container_name: v2scar
